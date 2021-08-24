@@ -43,6 +43,7 @@ console.log(
 | Canada  | Quebec    | Montreal | `CAN.QUEBEC.MONTREAL` | 2000-2030 |
 |         | Ontario   | Toronto  | `CAN.ONTARIO.TORONTO` | 2000-2030 |
 | France  | Metropole | Paris    | `FRA.METROPOLE.PARIS` | 2000-2030 |
+| USA     | HAWAI     |          | `USA.HAWAI`           | all       |
 
 ## How to participate
 
