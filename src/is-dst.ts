@@ -1,54 +1,100 @@
-import getYear from 'date-fns/getYear';
-import isAfter from 'date-fns/isAfter';
-import isBefore from 'date-fns/isBefore';
+import { getYear, isAfter, isBefore } from 'date-fns';
 import * as moment from 'moment-timezone';
 
-import { CanadaDstLocation } from './dst/canada-dst';
-import { FranceDstLocation } from './dst/france-dst';
+import { CountryDst, DstRefs } from './dst/models';
+
+import CanadaDst, { CanadaDstLocation } from './dst/canada-dst';
+import FranceDst, { FranceDstLocation } from './dst/france-dst';
+import UsaDst, { UsaDstLocation } from './dst/usa-dst';
 
 interface Options {
-  location: CanadaDstLocation | FranceDstLocation;
-  //   failIfNotExisting: Boolran
+  location: CanadaDstLocation | FranceDstLocation | UsaDstLocation;
+  failIfNotExisting?: boolean;
 }
 
-// const refs: any = {
-//     2018: ['2018-03-11 02:00:00', '2018-11-04 01:00:00'],
-//     2019: ['2019-03-10 02:00:00', '2019-11-03 01:00:00'],
-//     2020: ['2020-03-08 02:00:00', '2020-11-01 01:00:00'],
-//     2021: ['2021-03-14 02:00:00', '2021-11-07 01:00:00'],
-//     2022: ['2022-03-13 02:00:00', '2022-11-06 01:00:00']
-//   };
+const getCountryDstRef = (country: string): CountryDst => {
+  switch (country) {
+    case 'CAN':
+      return CanadaDst;
+    case 'FRA':
+      return FranceDst;
+    case 'USA':
+      return UsaDst;
+    default:
+      null;
+  }
+};
 
-// const DST_REFS = {
-//     Canada: {
-//         default:
-//         Quebec: {
+export const getDstRef = (
+  location: Options['location'],
+  failIfNotExisting = false
+): DstRefs => {
+  const [country, state, city] = location.split('.');
+  const countryRef = getCountryDstRef(country);
 
-//         }
-//     }
-// }
+  if (!countryRef || (countryRef && !countryRef.defaultDstRef)) {
+    const message = `Refs don't exist for this ISO country code (${country})`;
+    if (failIfNotExisting) {
+      throw new Error(message);
+    } else {
+      console.warn(message);
+      return null;
+    }
+  }
 
-export const isDST = (date: Date, options: Options): Boolean => {
-  const refs: any = {
-    2018: ['2018-03-11 02:00:00', '2018-11-04 01:00:00'],
-    2019: ['2019-03-10 02:00:00', '2019-11-03 01:00:00'],
-    2020: ['2020-03-08 02:00:00', '2020-11-01 01:00:00'],
-    2021: ['2021-03-14 02:00:00', '2021-11-07 01:00:00'],
-    2022: ['2022-03-13 02:00:00', '2022-11-06 01:00:00']
-  };
+  if (!state) {
+    return countryRef.defaultDstRef;
+  }
+
+  if ((state && !countryRef.states) || (state && !countryRef.states[state])) {
+    const message = `State (${state}) doesn't exist for this ISO country code (${country})`;
+    if (failIfNotExisting) {
+      throw new Error(message);
+    } else {
+      console.warn(message);
+      return null;
+    }
+  }
+
+  if (!city) {
+    return countryRef.states[state].defaultDstRef;
+  }
+
+  if (
+    (city && !countryRef.states[state].cities) ||
+    (city && !countryRef.states[state].cities[city])
+  ) {
+    const message = `City (${city}) doesn't exist for "${country}/${state}"`;
+    if (failIfNotExisting) {
+      throw new Error(message);
+    } else {
+      console.warn(message);
+      return null;
+    }
+  }
+
+  return countryRef.states[state].cities[city].defaultDstRef;
+};
+
+export const isDst = (date: Date, options: Options): Boolean => {
+  const refs = getDstRef(options.location, options.failIfNotExisting);
 
   const currentYear = getYear(date);
 
-  if (!refs[currentYear]) {
-    console.warn(`DST doesn't exist for this year (${currentYear})`);
-    return false;
+  const { refs: dates, timezone } = refs;
+
+  if (!dates[currentYear] || !currentYear) {
+    const message = `DST doesn't exist for this year (${currentYear})`;
+    if (options.failIfNotExisting) {
+      throw new Error(message);
+    } else {
+      console.warn(message);
+      return false;
+    }
   }
 
   return (
-    isAfter(
-      date,
-      moment.tz(refs[currentYear][0], 'America/New_York').toDate()
-    ) &&
-    isBefore(date, moment.tz(refs[currentYear][1], 'America/New_York').toDate())
+    isAfter(date, moment.tz(dates[currentYear][0], timezone).toDate()) &&
+    isBefore(date, moment.tz(dates[currentYear][1], timezone).toDate())
   );
 };

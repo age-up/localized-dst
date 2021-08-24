@@ -1,8 +1,10 @@
 export type DstRef = [string, string];
 
-export type DstRefsByYear = {
-  [year: number]: DstRef;
-};
+export type DstRefsByYear =
+  | {
+      [year: number]: DstRef;
+    }
+  | false; // Means no DST
 
 export interface DstRefs {
   timezone: string;

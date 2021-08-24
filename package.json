@@ -9,8 +9,12 @@
   ],
   "scripts": {
     "build": "tsc",
+    "publish-lib": "npm run build && npm publish",
+    "publish-beta": "npm run build && npm publish --tag beta",
+    "publish-dryrun": "npm run build && npm publish --dry-run",
     "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --coverage",
+    "test:watch": "jest --watch"
   },
   "keywords": [
     "dst",
@@ -24,9 +28,12 @@
   "author": "Remi THOMAS",
   "license": "ISC",
   "devDependencies": {
+    "@types/jest": "^27.0.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.1",
-    "prettier": "^2.3.2"
+    "jest": "^27.0.6",
+    "prettier": "^2.3.2",
+    "ts-jest": "^27.0.5"
   },
   "dependencies": {
     "date-fns": "^2.23.0",
