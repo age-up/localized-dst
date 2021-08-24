@@ -1,5 +1,5 @@
 {
-  "name": "@remithomas/dst",
+  "name": "localized-dst",
   "version": "1.0.0",
   "description": "Determine if a date is in daylight savings time by country/state/city",
   "main": "dist/index.js",

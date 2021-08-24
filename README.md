@@ -1,4 +1,4 @@
-# DST
+# localized DST
 
 `Determine if a date is in daylight savings time by country/state/city`
 
