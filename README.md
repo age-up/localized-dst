@@ -11,13 +11,13 @@ This is based on the information of https://www.timeanddate.com/time/dst/
 ## Installation
 
 ```bash
-npm install @remithomas/dst
+npm install localized-dst
 ```
 
 ## How to use it
 
 ```ts
-import { isDst } from '@remithomas/dst';
+import { isDst } from 'localized-dst';
 
 // DST info for Canada, Québec, Montréal
 console.log(
