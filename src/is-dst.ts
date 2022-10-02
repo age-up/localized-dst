@@ -3,17 +3,20 @@ import * as moment from 'moment-timezone';
 
 import { CountryDst, DstRefs } from './dst/models';
 
+import AustraliaDst, { AustraliaDstLocation } from './dst/australia-dst';
 import CanadaDst, { CanadaDstLocation } from './dst/canada-dst';
 import FranceDst, { FranceDstLocation } from './dst/france-dst';
 import UsaDst, { UsaDstLocation } from './dst/usa-dst';
 
 interface Options {
-  location: CanadaDstLocation | FranceDstLocation | UsaDstLocation;
+  location: AustraliaDstLocation | CanadaDstLocation | FranceDstLocation | UsaDstLocation;
   failIfNotExisting?: boolean;
 }
 
 const getCountryDstRef = (country: string): CountryDst => {
   switch (country) {
+    case 'AUS':
+      return AustraliaDst;
     case 'CAN':
       return CanadaDst;
     case 'FRA':

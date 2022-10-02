@@ -26,6 +26,9 @@
     "date"
   ],
   "author": "Remi THOMAS",
+  "contributors": [
+    "Adrian EDWARDS"
+  ],
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^27.0.1",
