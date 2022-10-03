@@ -20,6 +20,12 @@ describe('isDst functions', () => {
         expect(expected).toHaveProperty('timezone');
         expect(expected).toHaveProperty('refs');
       });
+
+      it('should get Australian default refs', () => {
+        const expected = getDstRef('AUS');
+        expect(expected).toHaveProperty('timezone');
+        expect(expected).toHaveProperty('refs');
+      });
     });
 
     it("should FAIL if country doesn't exist", () => {
@@ -135,6 +141,20 @@ describe('isDst functions', () => {
         location: 'USA.HAWAII'
       });
       expect(expected).toBeFalsy();
+    });
+
+    it('should NOT be in DST for Victoria the 2012-07-24 00:00:00', () => {
+      const expected = isDst(new Date('2012-07-24 00:00:00'), {
+        location: 'AUS.VICTORIA'
+      });
+      expect(expected).toBeFalsy();
+    });
+
+    it('should be in DST for Melbourne the 2012-12-24 00:00:00', () => {
+      const expected = isDst(new Date('2012-12-24 00:00:00'), {
+        location: 'AUS.VICTORIA.MELBOURNE'
+      });
+      expect(expected).toBeTruthy();
     });
   });
 });
